@@ -1,59 +1,40 @@
 module.exports = function solveEquation(equation) {
-  const positive = "+";
-  const negative = "-";
-  var countpositive = findZnack(equation,positive);
-  var countnegative = findZnack(equation,negative);
-  var arraypositive = [];
-  var arraynegative = [];
-  var resultarray = [];
-  var initpositivDisc = false;
+  var replaceznak = equation.replace(/- /g,"+-");
+  var resultarray = replaceznak.split('+');
   var axsquare = 0;
   var bx = 0;
   var c = 0;
-   console.log(countpositive, countnegative);
-;
-  if(countnegative >= 0 && countnegative < countpositive) {
-    resultarray = equation.split(positive);
-    if(countnegative > 0) {
-      initpositivDisc = true;
-    }
-  } else if(countpositive === 0) {
-    resultarray = equation.split(negative);
-    if(countnegative != 3) {
-      initpositivDisc = true;
-    }
-  } else if(countpositive != 0 && countpositive <= countnegative) {
-    arraypositive = equation.split(positive);
-    arraynegative = equation.split(negative);
-  } 
- //console.log(arraypositive,arraynegative);
-  if(arraynegative.length >0 && arraypositive.length > 0 ) {
-    var resarr = [];
-    for(let i = 0; i < arraynegative.length; i++) {
-      var timingarray = arraynegative[i].indexOf(positive);
-      if(timingarray != -1) {
-        var str = arraynegative[i];
-        str = str.split(positive);
-        arraynegative.splice(i,1, str[0], str[1]);
-      }
-    }
-    resultarray = arraynegative;    
+  var discriminant = 0;
+
+  for(let i = 0; i<resultarray.length; i++) {
+    discriminant = parseInt(resultarray[i])
+    var foundA = resultarray[i].indexOf('x^2');
+    if(foundA != -1) {
+      axsquare = parseInt(resultarray[i]);
+      resultarray.splice(i,1);
+    } 
+    var foundB = resultarray[i].indexOf('x');
+    if(foundB != -1) {
+      bx = parseInt(resultarray[i]);
+    } else { c = parseInt(resultarray[i])};
   }
-console.log(resultarray);
+  discriminant = findDiscriminant(axsquare,bx,c);
+  return greaterZerodiscr(axsquare,bx,discriminant);
 }
 
-function findZnack(array,znack) {
-  var pos = 0;
-  var count = 0;
-  while (true) {
-    var foundPos = array.indexOf(znack, pos);
-    if (foundPos == -1) {
-      break;
-    } else { 
-      count++;
-      pos = foundPos + 1;
-    }
-  }
-  return count;
+function findDiscriminant(a,b,c) {
+    return Math.pow(b,2) - 4*a*c;
+}
 
+function greaterZerodiscr(a,b,d) {
+  var array = [];
+  d = Math.abs(d)
+  var x1 = Math.round((-b + Math.sqrt(d)) / (2 * a));
+  var x2 = Math.round((-b - Math.sqrt(d)) / (2 * a));
+  array.push(x1);
+  array.push(x2);
+  array.sort((a, b) => {
+    return a - b;
+  })
+  return array;
 }
